@@ -1,52 +1,21 @@
-import React, { useState, useEffect } from "react";
-import TodoForm from "./comps/Todo/Todo";
-import TodoList from "./comps/List/List";
+import React from "react";
+import Home from "./comps/Home/Home";
+import SignIn from "./comps/SignIn/SignIn";
+import SignUp from "./comps/SignUp/SignUp";
+
 import "./App.scss";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 function App() {
-  const [todos, setTodos] = useState([]);
-
-  useEffect(() => {
-    const storedTodos = JSON.parse(localStorage.getItem("todos"));
-    if (storedTodos) {
-      setTodos(storedTodos);
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
-
-  function addTodo(newTodo) {
-    setTodos([...todos, newTodo]);
-  }
-
-  function completeTodo(id) {
-    const updatedTodos = todos.map((todo) => {
-      if (todo.id === id) {
-        return { ...todo, completed: !todo.completed };
-      } else {
-        return todo;
-      }
-    });
-    setTodos(updatedTodos);
-  }
-
-  function deleteTodo(id) {
-    const updatedTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(updatedTodos);
-  }
-
   return (
-    <div className="app">
-      <h1 id="tittle">Gapil ToDo App</h1>
-      <TodoForm onAddTodo={addTodo} />
-      <TodoList
-        todos={todos}
-        onCompleteChange={completeTodo}
-        onDelete={deleteTodo}
-      />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="*" element={<Home />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
