@@ -1,7 +1,17 @@
+import { Password } from "@mui/icons-material";
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
-import { getDatabase } from "firebase/database";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
+import firebase from "firebase/compat/app";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  where,
+  query,
+  getDocs,
+} from "firebase/firestore";
+import "firebase/compat/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD1Ok0xbv1MgU3gRhlzv4Gg9Bl6IoMyEXI",
@@ -14,8 +24,28 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const db = getFirestore();
 
-export const auth = getAuth(app);
-export const db = getDatabase(app);
-export default app;
+export const signInWithEmailAndPassword = async (email, password) => {
+  try {
+    await signInWithEmailAndPassword(email, password);
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+export const registerWithEmailAndPassword = async (name, email, password) => {
+  try {
+    const res = await createUserWithEmailAndPassword(email, password);
+    const user = res.user;
+    await addDoc(collection(db, "users"), {
+      uid: user.uid,
+      name,
+      authProvider: "local",
+      email,
+    });
+  } catch (err) {
+    alert(err.message);
+  }
+};
