@@ -4,14 +4,17 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
+  updateProfile,
 } from "firebase/auth";
-import { app } from "../../firebase";
-
+import { getFirestore, doc, updateDoc } from "firebase/firestore";
+import { app, db } from "../../firebase";
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
+  const [displayName, setDisplayName] = useState("");
+  const db = getFirestore(app);
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -26,6 +29,18 @@ function SignIn() {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      setUser(user);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      setDisplayName(user.displayName);
+    }
+  }, [user]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
@@ -37,68 +52,71 @@ function SignIn() {
       setError(error.message);
     }
   };
+
   const handleLogout = async (e) => {
     e.preventDefault();
 
     const auth = getAuth(app);
     await signOut(auth);
   };
+
+  const handleDisplayName = async () => {
+    const auth = getAuth(app);
+    const user = auth.currentUser;
+
+    try {
+      await updateProfile(user, {
+        displayName: displayName,
+      });
+
+      const userRef = doc(db, "users", user.uid);
+      await updateDoc(userRef, {
+        displayName: displayName,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div>
       {user ? (
         <div>
-          <h2>{user.displayName}</h2>
-          {user.displayName && <h2>{user.displayName}</h2>}
+          {user && <p>Merhaba, {user.displayName}!</p>}
           {user.photoURL ? (
-            <img
-              src={user.photoURL}
-              alt={user.displayName}
-              width="100"
-              height="100"
-            />
+            <img src={user.photoURL} alt="Profil Resmi" />
           ) : (
-            <div
-              style={{
-                width: "100px",
-                height: "100px",
-                backgroundColor: "gray",
-              }}
-            ></div>
+            <p>Profil resmi yok</p>
           )}
           <button onClick={handleLogout}>Çıkış Yap</button>
         </div>
       ) : (
-        <div>
-          <h2>Giriş Yap</h2>
-          <form onSubmit={handleLogin}>
-            <div>
-              <label htmlFor="exampleInputEmail1">Email address</label>
-              <input
-                type="email"
-                className="form-control"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-                placeholder="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="exampleInputPassword1">Password</label>
-              <input
-                type="password"
-                className="form-control"
-                id="exampleInputPassword1"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <button type="submit" className="btn btn-primary">
-              Giriş Yap
-            </button>
-          </form>
+        <form>
+          <label>Email address</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <label>Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button onClick={handleLogin}>Giriş Yap</button>
           {error && <p>{error}</p>}
+        </form>
+      )}
+      {user && (
+        <div>
+          <label>Display Name</label>
+          <input
+            type="text"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+          />
+          <button onClick={handleDisplayName}>Değiştir</button>
         </div>
       )}
     </div>
