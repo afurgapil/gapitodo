@@ -48,12 +48,23 @@ function SignIn() {
       {user ? (
         <div>
           <h2>{user.displayName}</h2>
-          <img
-            src={user.photoURL}
-            alt={user.displayName}
-            width="100"
-            height="100"
-          />
+          {user.displayName && <h2>{user.displayName}</h2>}
+          {user.photoURL ? (
+            <img
+              src={user.photoURL}
+              alt={user.displayName}
+              width="100"
+              height="100"
+            />
+          ) : (
+            <div
+              style={{
+                width: "100px",
+                height: "100px",
+                backgroundColor: "gray",
+              }}
+            ></div>
+          )}
           <button onClick={handleLogout}>Çıkış Yap</button>
         </div>
       ) : (
