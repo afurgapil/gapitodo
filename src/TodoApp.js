@@ -4,7 +4,7 @@ import SignIn from "./comps/SignIn/SignIn";
 import SignUp from "./comps/SignUp/SignUp";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Profile from "./comps/Profile/Profile";
-import Header from "./comps/Header";
+import Header from "./comps/Header/Header";
 
 function TodoApp() {
   return (

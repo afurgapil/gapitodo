@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-
+import { getStorage } from "firebase/storage";
 const firebaseConfig = {
   apiKey: "AIzaSyD1Ok0xbv1MgU3gRhlzv4Gg9Bl6IoMyEXI",
   authDomain: "react-todo-app-14b70.firebaseapp.com",
@@ -14,12 +14,9 @@ const firebaseConfig = {
   measurementId: "G-916JTHWS8G",
 };
 
-// firebase'i başlat
 const app = initializeApp(firebaseConfig);
-
-// auth nesnesine erişim
 const auth = getAuth(app);
-//firestore export
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-export { app, auth, db };
+export { app, auth, db, storage };

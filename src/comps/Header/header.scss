@@ -1,0 +1,52 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #fff;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+
+  h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+
+    a {
+      color: #333;
+      text-decoration: none;
+      margin-right: 1rem;
+      font-weight: bold;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    button {
+      border: none;
+      background-color: transparent;
+      color: #333;
+      cursor: pointer;
+      font-weight: bold;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    #onLogin {
+      display: flex;
+      align-items: center;
+    }
+
+    #onNotLogin {
+      display: flex;
+      align-items: center;
+    }
+  }
+}

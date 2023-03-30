@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { app } from "../../firebase";
-import { doc, setDoc, getFirestore } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
+
+import { app, auth, db, storage } from "../../firebase";
+
 function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,25 +15,42 @@ function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
     setError(null);
-    const handleNameChange = (e) => {
-      setName(e.target.value);
-    };
     try {
-      const auth = getAuth(app);
       const { user } = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
 
-      const db = getFirestore(app);
       await setDoc(doc(db, "users", user.uid), {
         email: user.email,
         displayName: name,
         photoURL: "",
       });
+
+      setDefaultProfilePicture(user.uid);
     } catch (error) {
       setError(error.message);
+    }
+  };
+
+  const setDefaultProfilePicture = async (userId) => {
+    const storageRef = ref(storage, "user.png");
+    let downloadURL = null;
+
+    try {
+      downloadURL = await getDownloadURL(storageRef);
+    } catch (error) {
+      console.log(error);
+    }
+
+    const userRef = doc(db, "users", userId);
+
+    try {
+      await setDoc(userRef, { profilePicture: downloadURL }, { merge: true });
+      console.log("Profil resmi varsayılan olarak ayarlandı");
+    } catch (error) {
+      console.error("Profil resmi varsayılan olarak ayarlanamadı:", error);
     }
   };
 
