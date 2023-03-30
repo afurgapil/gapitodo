@@ -1,5 +1,5 @@
-import firebase from "firebase/compat/app"; // firebase compat modülü
-import "firebase/compat/auth"; // auth modülü
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD1Ok0xbv1MgU3gRhlzv4Gg9Bl6IoMyEXI",
@@ -13,8 +13,10 @@ const firebaseConfig = {
   measurementId: "G-916JTHWS8G",
 }; // Initialize Firebase
 
-firebase.initializeApp(firebaseConfig);
+// firebase'i başlat
+const app = initializeApp(firebaseConfig);
 
-export const auth = firebase.auth();
+// auth nesnesine erişim
+const auth = getAuth(app);
 
-export default firebase;
+export { app, auth };

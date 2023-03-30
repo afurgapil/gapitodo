@@ -1,23 +1,22 @@
-import React, { useState } from "react";
-import { auth } from "../../firebase";
+import { useState } from "react";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { app } from "../../firebase";
 
 function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
+    setError(null);
 
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        // Yeni kullanıcı başarıyla kaydedildi
-        console.log(userCredential.user);
-      })
-      .catch((error) => {
-        // Hataları burada yönetebilirsiniz
-        console.error(error);
-      });
+    try {
+      const auth = getAuth(app);
+      await createUserWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   return (
@@ -51,6 +50,7 @@ function Signup() {
           Kayıt Ol
         </button>
       </form>
+      {error && <p>{error}</p>}
     </div>
   );
 }
