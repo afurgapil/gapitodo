@@ -1,75 +1,174 @@
 import { useState, useEffect } from "react";
-import { getAuth, getUserWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+  updateProfile,
+} from "firebase/auth";
 import { app } from "../../firebase";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 function Profile() {
-  const [displayName, setDisplayName] = useState("");
-  const [photoURL, setPhotoURL] = useState("");
-  const [updating, setUpdating] = useState(false);
+  const [user, setUser] = useState(null);
+  const [displayName, setDisplayName] = useState(null);
+  const [newDisplayName, setNewDisplayName] = useState("");
+  const [photoURL, setPhotoURL] = useState(null);
+  const [newPhotoURL, setNewPhotoURL] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const getUserProfile = async () => {
-    const auth = getAuth(app);
-    const { user } = auth.currentUser;
+  const storage = getStorage(app);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    const db = getFirestore(app);
-    const profileRef = doc(db, "users", user.uid);
-    const profileSnap = await getDoc(profileRef);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+    });
 
-    if (profileSnap.exists()) {
-      const { displayName, photoURL } = profileSnap.data();
-      setDisplayName(displayName);
-      setPhotoURL(photoURL);
+    return unsubscribe;
+  }, [auth]);
+
+  useEffect(() => {
+    if (user) {
+      setDisplayName(user.displayName);
+      setPhotoURL(user.photoURL);
+    }
+  }, [user]);
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+
+    try {
+      await signOut(auth);
+      window.location.reload();
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  useEffect(() => {
-    getUserProfile();
-  }, []);
-
-  const handleProfileUpdate = async (e) => {
+  const handleDisplayNameChange = async (e) => {
     e.preventDefault();
-    setUpdating(true);
 
-    const auth = getAuth(app);
-    const { user } = auth.currentUser;
+    setIsLoading(true);
 
-    const db = getFirestore(app);
-    await setDoc(doc(db, "users", user.uid), {
-      displayName,
-      photoURL,
-    });
+    try {
+      const userDoc = doc(db, "users", user.uid);
+      await updateDoc(userDoc, {
+        displayName: newDisplayName,
+      });
 
-    setUpdating(false);
+      await updateProfile(auth.currentUser, {
+        displayName: newDisplayName,
+      });
+
+      setDisplayName(newDisplayName);
+      setNewDisplayName("");
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      setError(error.message);
+    }
+  };
+
+  const handlePhotoURLChange = async (e) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+
+    try {
+      const userDoc = doc(db, "users", user.uid);
+      await updateDoc(userDoc, {
+        photoURL: newPhotoURL,
+      });
+
+      await updateProfile(auth.currentUser, {
+        photoURL: newPhotoURL,
+      });
+
+      setPhotoURL(newPhotoURL);
+      setNewPhotoURL("");
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      setError(error.message);
+    }
+  };
+  const handleFileUpload = async (e) => {
+    e.preventDefault();
+
+    try {
+      const file = e.target.files[0];
+
+      // Dosya uzantısı kontrolü yapılabilir
+      const storageRef = storage.ref(`users/${user.uid}/${file.name}`);
+      await uploadBytes(storageRef, file);
+
+      const downloadURL = await storageRef.getDownloadURL();
+      const userRef = doc(db, "users", user.uid);
+      await updateDoc(userRef, {
+        photoURL: downloadURL,
+      });
+
+      await updateProfile(auth.currentUser, {
+        photoURL: downloadURL,
+      });
+
+      setPhotoURL(downloadURL);
+      setNewPhotoURL(downloadURL); // update newPhotoURL state
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      setError(error.message);
+    }
   };
 
   return (
-    <div>
-      <h1>Profile</h1>
-      <form onSubmit={handleProfileUpdate}>
-        <label>
-          Display Name:
-          <input
-            type="text"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-          />
-        </label>
-        <br />
-        <label>
-          Photo URL:
-          <input
-            type="text"
-            value={photoURL}
-            onChange={(e) => setPhotoURL(e.target.value)}
-          />
-        </label>
-        <br />
-        <button type="submit" disabled={updating}>
-          {updating ? "Updating..." : "Update Profile"}
-        </button>
-      </form>
-    </div>
+    <>
+      {isLoading && "Loading..."}
+      {error && { error }}
+      {user && (
+        <>
+          <h2>Profile</h2>
+          <p>Display Name: {displayName}</p>
+          <form onSubmit={handleDisplayNameChange}>
+            <label>
+              Change Display Name:
+              <input
+                type="text"
+                value={newDisplayName}
+                onChange={(e) => setNewDisplayName(e.target.value)}
+              />
+            </label>
+            <button type="submit">Save</button>
+          </form>
+
+          <form onSubmit={handlePhotoURLChange}>
+            <label>
+              Change Profile Picture URL:
+              <input
+                type="text"
+                value={newPhotoURL}
+                onChange={(e) => setNewPhotoURL(e.target.value)}
+              />
+            </label>
+            <button type="submit">Save</button>
+          </form>
+
+          <form>
+            <label htmlFor="profilePhoto">Profile Photo:</label>
+            <input type="file" id="profilePhoto" onChange={handleFileUpload} />
+          </form>
+
+          <button onClick={handleLogout}>Logout</button>
+        </>
+      )}
+    </>
   );
 }
 

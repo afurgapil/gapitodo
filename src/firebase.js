@@ -19,7 +19,7 @@ const app = initializeApp(firebaseConfig);
 
 // auth nesnesine erişim
 const auth = getAuth(app);
-
+//firestore export
 const db = getFirestore(app);
 
 export { app, auth, db };

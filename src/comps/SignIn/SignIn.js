@@ -8,13 +8,13 @@ import {
 } from "firebase/auth";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { app, db } from "../../firebase";
+
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
   const [displayName, setDisplayName] = useState("");
-  const db = getFirestore(app);
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -28,12 +28,6 @@ function SignIn() {
 
     return unsubscribe;
   }, []);
-
-  useEffect(() => {
-    if (user) {
-      setUser(user);
-    }
-  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -73,9 +67,12 @@ function SignIn() {
       await updateDoc(userRef, {
         displayName: displayName,
       });
+
+      setDisplayName(user.displayName);
     } catch (error) {
       console.error(error);
     }
+    window.location.reload();
   };
 
   return (
