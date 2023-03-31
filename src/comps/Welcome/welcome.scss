@@ -1,0 +1,52 @@
+$primary-color: #007bff;
+$secondary-color: #6c757d;
+$font-size: 1.2rem;
+$border-radius: 5px;
+
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+
+  &__title {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: white;
+  }
+
+  &__text {
+    font-size: $font-size;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .welcome-buttons {
+    background-color: $primary-color;
+    color: white;
+    font-size: $font-size;
+    padding: 0.5rem 1rem;
+    border-radius: $border-radius;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: darken($primary-color, 10%);
+    }
+  }
+
+  &__link {
+    color: $secondary-color;
+    font-size: $font-size;
+    margin-top: 1rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: darken($secondary-color, 10%);
+    }
+  }
+}

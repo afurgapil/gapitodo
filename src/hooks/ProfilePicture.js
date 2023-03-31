@@ -39,8 +39,8 @@ function ProfilePicture() {
       {profilePictureUrl ? (
         <img
           src={profilePictureUrl}
-          alt="Profile Picture"
-          style={{ height: "80px" }}
+          alt="User Profile Pic"
+          style={{ height: "60px", borderRadius: "50%" }}
         />
       ) : (
         <p>Loading...</p>

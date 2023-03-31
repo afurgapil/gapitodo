@@ -1,39 +1,30 @@
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  background-color: #fff;
+  background-color: #3c093d;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-
-  h1 {
-    font-size: 2rem;
-    font-weight: bold;
+  height: 5rem;
+  #header-title {
+    font-size: 3rem;
     margin: 0;
+    margin-left: 4rem;
+    color: whitesmoke;
+    font-family: "Pacifico";
   }
 
   nav {
     display: flex;
     align-items: center;
+    margin-right: 2rem;
 
     a {
-      color: #333;
+      color: whitesmoke;
       text-decoration: none;
       margin-right: 1rem;
       font-weight: bold;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    button {
-      border: none;
-      background-color: transparent;
-      color: #333;
-      cursor: pointer;
-      font-weight: bold;
-
       &:hover {
         text-decoration: underline;
       }

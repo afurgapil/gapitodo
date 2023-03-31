@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { auth } from "../../firebase";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import "./header.scss";
 import ProfilePicture from "../../hooks/ProfilePicture";
+import SignOutButton from "../../hooks/SignOutButton";
+
 function Header() {
   const [user, setUser] = useState(null);
 
@@ -13,25 +15,27 @@ function Header() {
 
     return unsubscribe;
   }, []);
+
   return (
     <div className="header">
-      <h1>ToDo</h1>
+      <NavLink to="/mainpage">
+        <h1 id="header-title">GaPiToDo</h1>
+      </NavLink>
       <nav>
         {user ? (
           <div id="onLogin">
-            <Link to="/home">Home</Link>
-            <Link to="/profile">Profile</Link>
-            <ProfilePicture></ProfilePicture>
+            <Link to="/profile">
+              <ProfilePicture />
+            </Link>
+            <SignOutButton />
           </div>
         ) : null}
-        {user ? (
-          <button onClick={() => auth.signOut()}>Sign Out</button>
-        ) : (
+        {!user ? (
           <div id="onNotLogin">
             <Link to="/signin">Sign In</Link>
             <Link to="/signup">Sign Up</Link>
           </div>
-        )}
+        ) : null}
       </nav>
     </div>
   );

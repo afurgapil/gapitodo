@@ -7,13 +7,13 @@ import Checkbox from "@mui/material/Checkbox";
 function TodoList(props) {
   const { todos, onCompleteChange, onDelete } = props;
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
-  if (todos.length === 0) {
-    return (
-      <p className="empty animate__animated animate__bounce  animate__infinite animate__slow">
-        Empty!
-      </p>
-    );
-  }
+  // if (todos.length === 0) {
+  //   return (
+  //     <p className="empty animate__animated animate__bounce  animate__infinite animate__slow">
+  //       Empty!
+  //     </p>
+  //   );
+  // }
 
   return (
     <div id="main-list">
