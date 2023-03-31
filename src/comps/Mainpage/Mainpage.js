@@ -24,16 +24,8 @@ function Mainpage() {
 
   return (
     <div>
-      {user ? (
-        <div id="onLoginHome">
-          <Home></Home>
-        </div>
-      ) : null}
-      {!user ? (
-        <div id="onNotLogin">
-          <Welcome></Welcome>
-        </div>
-      ) : null}
+      {user ? <Home></Home> : null}
+      {!user ? <Welcome></Welcome> : null}
     </div>
   );
 }
