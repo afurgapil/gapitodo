@@ -42,7 +42,7 @@ function SignIn() {
     try {
       const auth = getAuth(app);
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/home");
+      navigate("/todo");
     } catch (error) {
       setError(error.message);
     }

@@ -18,7 +18,7 @@ function Header() {
 
   return (
     <div className="header">
-      <NavLink to="/mainpage">
+      <NavLink to="/todo">
         <h1 id="header-title">GaPiToDo</h1>
       </NavLink>
       <nav>

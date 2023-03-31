@@ -5,12 +5,14 @@ import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
 import { app, auth, db, storage } from "../../firebase";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -29,6 +31,7 @@ function Signup() {
       });
 
       setDefaultProfilePicture(user.uid);
+      navigate("/todo");
     } catch (error) {
       setError(error.message);
     }

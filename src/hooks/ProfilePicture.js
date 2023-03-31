@@ -3,9 +3,10 @@ import { storage } from "../firebase";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { ref, getDownloadURL } from "firebase/storage";
 import { getAuth } from "firebase/auth";
-
+import "./hooks.scss";
 function ProfilePicture() {
   const [profilePictureUrl, setProfilePictureUrl] = useState(null);
+  const [displayName, setDisplayName] = useState(null);
   const auth = getAuth();
   const user = auth.currentUser;
   const firestore = getFirestore();
@@ -17,6 +18,10 @@ function ProfilePicture() {
       getDoc(userRef)
         .then((doc) => {
           if (doc.exists()) {
+            //displayname cektik
+            const userDisplayName = doc.data().displayName;
+            setDisplayName(userDisplayName);
+            //foto cektik
             const profilePicture = doc.data().profilePicture;
             if (profilePicture) {
               const storageRef = ref(storage, profilePicture);
@@ -37,11 +42,10 @@ function ProfilePicture() {
   return (
     <div>
       {profilePictureUrl ? (
-        <img
-          src={profilePictureUrl}
-          alt="User Profile Pic"
-          style={{ height: "60px", borderRadius: "50%" }}
-        />
+        <div id="profile-picture">
+          <img src={profilePictureUrl} alt="User Profile Pic" />
+          <h3>{displayName}</h3>
+        </div>
       ) : (
         <p>Loading...</p>
       )}

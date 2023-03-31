@@ -14,7 +14,7 @@ function TodoApp() {
         <Header></Header>
         <Routes>
           <Route path="/" element={<Mainpage />} />
-          <Route path="/mainpage" element={<Mainpage />} />
+          <Route path="/todo" element={<Mainpage />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/profile" element={<Profile />} />

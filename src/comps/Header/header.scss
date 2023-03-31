@@ -7,6 +7,12 @@
   background-color: #3c093d;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
   height: 5rem;
+  a {
+    color: whitesmoke;
+    text-decoration: none;
+    margin-right: 1rem;
+    font-weight: bold;
+  }
   #header-title {
     font-size: 3rem;
     margin: 0;
