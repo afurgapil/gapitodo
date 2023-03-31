@@ -29,8 +29,19 @@ export default function SignInSide() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
-  const navigate = useNavigate();
+  const [quote, setQuote] = useState("");
+  const [author, setAuthor] = useState("");
 
+  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchQuote = async () => {
+      const response = await fetch("https://api.quotable.io/random");
+      const data = await response.json();
+      setQuote(data.content);
+      setAuthor(data.author);
+    };
+    fetchQuote();
+  }, []);
   useEffect(() => {
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -81,8 +92,25 @@ export default function SignInSide() {
                 : t.palette.grey[900],
             backgroundSize: "cover",
             backgroundPosition: "center",
+            position: "relative",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
-        />
+        >
+          <div
+            id="quote-container"
+            style={{
+              position: "absolute",
+              backgroundColor: "rgba(255, 255, 255, 0.5)",
+              borderRadius: "1rem",
+              padding: "1rem",
+            }}
+          >
+            <p id="quote">{quote}</p>
+            <p id="author">{`- ${author}`}</p>
+          </div>
+        </Grid>
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           <Box
             sx={{
