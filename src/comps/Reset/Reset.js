@@ -50,7 +50,7 @@ const Reset = () => {
             find your password from the dusty shelves and email you
           </p>
         </div>
-        <form onSubmit={handleResetPassword}>
+        <form onSubmit={handleResetPassword} id="reset-form">
           <TextField
             type="email"
             name="email"

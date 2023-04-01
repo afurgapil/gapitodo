@@ -40,7 +40,7 @@ function TodoForm(props) {
         <p id="quote">{quote}</p>
         <p id="author">{`- ${author}`}</p>
       </div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} id="ToDoForm">
         <input
           type="text"
           value={newTodo}
