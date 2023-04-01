@@ -105,3 +105,24 @@
   border-radius: 5px;
   cursor: pointer;
 }
+@media only screen and (max-width: 768px) {
+  #profile-container {
+    flex-direction: column;
+  }
+  #profile-container #pp-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem;
+  }
+  #profile-container #pp-container img {
+    width: 90%;
+    height: auto;
+  }
+  .user-info {
+    padding: 1rem, 2rem;
+  }
+  .profile-form .input-forms {
+    padding: 4rem;
+  }
+}

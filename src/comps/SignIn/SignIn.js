@@ -21,7 +21,7 @@ import {
 import { app } from "../../firebase";
 import { useNavigate } from "react-router-dom";
 import Copyright from "../../hooks/Copyright";
-
+import "./signin.scss";
 const theme = createTheme();
 
 export default function SignInSide() {

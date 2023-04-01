@@ -47,7 +47,7 @@ function TodoForm(props) {
           placeholder="New Todo"
           onChange={handleNewTodoChange}
         />
-        <button type="submit">Ekle</button>
+        <button type="submit">Add</button>
       </form>
     </div>
   );
