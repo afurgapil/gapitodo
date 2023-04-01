@@ -1,25 +1,25 @@
 import { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged, updateProfile } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc, getFirestore } from "firebase/firestore";
 import { app, db, storage } from "../../firebase";
 import { useNavigate } from "react-router-dom";
 import ProfilePicture from "../../hooks/ProfilePicture";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
+import "./Profile.scss";
 function Profile() {
   const [displayName, setDisplayName] = useState("");
   const [displayLastName, setDisplayLastName] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const [profilePictureUrl, setProfilePictureUrl] = useState(null);
+  const firestore = getFirestore();
 
   useEffect(() => {
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-        setDisplayName(user.displayName.split(" ")[0]);
-        setDisplayLastName(user.displayName.split(" ")[1]);
       } else {
         setUser(null);
       }
@@ -27,7 +27,30 @@ function Profile() {
 
     return unsubscribe;
   }, []);
-
+  useEffect(() => {
+    if (user) {
+      const userId = user.uid;
+      const userRef = doc(firestore, "users", userId);
+      getDoc(userRef)
+        .then((doc) => {
+          if (doc.exists()) {
+            //foto cektik
+            const profilePicture = doc.data().profilePicture;
+            if (profilePicture) {
+              const storageRef = ref(storage, profilePicture);
+              getDownloadURL(storageRef).then((url) => {
+                setProfilePictureUrl(url);
+              });
+            }
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      // Kullanıcı oturumu açmamış
+    }
+  }, [user, firestore]);
   const handleDisplayName = async () => {
     const auth = getAuth(app);
     const user = auth.currentUser;
@@ -87,47 +110,49 @@ function Profile() {
     navigate("/profile");
   };
   return (
-    <div>
+    <div className="profile-form">
       {user && (
-        <div>
-          <ProfilePicture />
-          <div className="mb-3">
-            <label htmlFor="displayName" className="form-label">
-              Display Name
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="displayName"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-            />
+        <div className="profile-form-container">
+          <img src={profilePictureUrl} alt="User Profile Pic" />
+          <div className="input-forms">
+            <div className="mb-3">
+              <label htmlFor="displayName" className="form-label">
+                Display Name
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="displayName"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="displayLastName" className="form-label">
+                Display Last Name
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="displayLastName"
+                value={displayLastName}
+                onChange={(e) => setDisplayLastName(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="profilePicture" className="form-label">
+                Profile Picture
+              </label>
+              <input
+                type="file"
+                className="form-control"
+                id="profilePicture"
+                onChange={handleFileInputChange}
+              />
+            </div>
+            <button onClick={handleDisplayName}>Save Name</button>{" "}
+            <button onClick={handleProfilePictureUpload}>Save Photo</button>
           </div>
-          <div className="mb-3">
-            <label htmlFor="displayLastName" className="form-label">
-              Display Last Name
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              id="displayLastName"
-              value={displayLastName}
-              onChange={(e) => setDisplayLastName(e.target.value)}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="profilePicture" className="form-label">
-              Profile Picture
-            </label>
-            <input
-              type="file"
-              className="form-control"
-              id="profilePicture"
-              onChange={handleFileInputChange}
-            />
-          </div>
-          <button onClick={handleDisplayName}>Save Name</button>{" "}
-          <button onClick={handleProfilePictureUpload}>Save Photo</button>
         </div>
       )}
     </div>
