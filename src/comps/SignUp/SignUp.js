@@ -48,7 +48,7 @@ export default function SignUp() {
       await setDoc(doc(db, "users", user.uid), {
         email: user.email,
         displayName: name,
-        displayLastame: lastname,
+        displayLastname: lastname,
         photoURL: "",
       });
 
