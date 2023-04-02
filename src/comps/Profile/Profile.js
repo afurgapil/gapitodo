@@ -8,13 +8,13 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveAsIcon from "@mui/icons-material/SaveAs";
 import BadgeIcon from "@mui/icons-material/Badge";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { Button } from "@mui/material";
 import "./Profile.scss";
 import Welcome from "../Welcome/Welcome";
 function Profile() {
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
+  const [censoredEmail, setCensoredEmail] = useState("");
   const [user, setUser] = useState(null);
   const [profilePictureUrl, setProfilePictureUrl] = useState(null);
   const firestore = getFirestore();
@@ -24,6 +24,34 @@ function Profile() {
     setIsEditOn(!isEditOn);
     window.location.reload();
   };
+  function censorEmail(email) {
+    const [username, domain] = email.split("@");
+    const censoredUsername =
+      username.charAt(0) +
+      "*".repeat(username.length - 2) +
+      username.charAt(username.length - 1);
+    return `${censoredUsername}@${domain}`;
+  }
+  useEffect(() => {
+    if (user) {
+      const userId = user.uid;
+      const userRef = doc(firestore, "users", userId);
+      getDoc(userRef)
+        .then((doc) => {
+          if (doc.exists()) {
+            const userMail = doc.data().email;
+            const censoredEmail = censorEmail(userMail);
+            setCensoredEmail(censoredEmail);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      //NotFoundUser
+    }
+  }, [user, firestore]);
+
   useEffect(() => {
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -203,6 +231,10 @@ function Profile() {
       <div className="profile-details">
         <div className="user-info">
           <p>
+            <span className="bold">Your E-Mail:</span>
+            {censoredEmail}
+          </p>
+          <p>
             <span className="bold">Your Name:</span>
             {name}
           </p>
@@ -210,7 +242,6 @@ function Profile() {
             <span className="bold">Your Last Name:</span>
             {lastname}
           </p>
-
           <Button
             className="edit-button"
             variant="contained"
