@@ -49,7 +49,6 @@ export default function SignUp() {
         email: user.email,
         displayName: name,
         displayLastname: lastname,
-        photoURL: "",
       });
 
       setDefaultProfilePicture(user.uid);

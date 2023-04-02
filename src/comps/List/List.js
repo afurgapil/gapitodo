@@ -5,6 +5,12 @@ import { useState, useRef, useEffect } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 function TodoList(props) {
   const [animationParent] = useAutoAnimate();
+  const [todoCount, setTodoCount] = useState(props.todos.length);
+
+  useEffect(() => {
+    setTodoCount(props.todos.length);
+  }, [props.todos]);
+
   const sortedTodos = [...props.todos].sort((a, b) => {
     if (a.completed && !b.completed) {
       return 1;
@@ -26,6 +32,7 @@ function TodoList(props) {
 
   return (
     <div className="TodoList" ref={animationParent}>
+      <p>You have {todoCount} todos</p>
       {sortedTodos.map((todo) => (
         <ListItem
           key={todo.id}

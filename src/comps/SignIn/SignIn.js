@@ -99,7 +99,7 @@ export default function SignInSide() {
           }}
         >
           <div
-            id="quote-container"
+            id="signin-quote-container"
             style={{
               position: "absolute",
               backgroundColor: "rgba(255, 255, 255, 0.5)",
