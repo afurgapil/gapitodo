@@ -16,17 +16,29 @@ import { db } from "../../firebase";
 function Home() {
   const [todos, setTodos] = useState([]);
   const [user, setUser] = useState(null);
-
+  const [completedTodos, setCompletedTodos] = useState([]);
   const auth = getAuth();
   const currentUser = auth.currentUser;
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "todos"), (snapshot) => {
-      const todoData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setTodos(todoData);
+      const todoData = snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }))
+        .sort((a, b) => b.createdAt - a.createdAt); // Zaman damgasına göre ters sırala
+
+      setTodos(todoData.filter((todo) => !todo.completed)); // Tamamlanmamış todoları set et
+      setCompletedTodos(todoData.filter((todo) => todo.completed)); // Tamamlanmış todoları set et
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, "todos"), (snapshot) => {
+      const todoData = snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }))
+        .filter((todo) => todo.completed === true) // Tamamlananları filtrele
+        .sort((a, b) => b.createdAt - a.createdAt); // Zaman damgasına göre ters sırala
+      setCompletedTodos(todoData);
     });
     return unsubscribe;
   }, []);
@@ -40,8 +52,14 @@ function Home() {
   }, []);
 
   async function addTodo(newTodo) {
-    const todoRef = await addDoc(collection(db, "todos"), newTodo);
-    setTodos([...todos, { id: todoRef.id, ...newTodo }]);
+    const timestamp = Date.now();
+    const todoRef = await addDoc(collection(db, "todos"), {
+      ...newTodo,
+      createdAt: timestamp,
+    });
+    setTodos([...todos, { id: todoRef.id, ...newTodo, createdAt: timestamp }]);
+    console.log(timestamp);
+    console.log(todos);
   }
 
   async function completeTodo(todo) {
@@ -49,7 +67,6 @@ function Home() {
       ...todo,
       completed: !todo.completed,
     });
-    todo.completed = !todo.completed;
   }
 
   async function deleteTodo(todo) {
@@ -64,6 +81,7 @@ function Home() {
             <TodoForm onAddTodo={addTodo} />
             <TodoList
               todos={todos}
+              completedTodos={completedTodos}
               onCompleteChange={completeTodo}
               onDelete={deleteTodo}
             />

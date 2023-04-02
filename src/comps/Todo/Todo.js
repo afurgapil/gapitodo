@@ -28,9 +28,11 @@ function TodoForm(props) {
     if (newTodo.trim() === "") {
       return;
     }
+    const createdAt = Date.now();
     const todo = {
       title: newTodo,
       completed: false,
+      createdAt: createdAt,
     };
     await addDoc(collection(db, "todos"), todo);
     setNewTodo("");
