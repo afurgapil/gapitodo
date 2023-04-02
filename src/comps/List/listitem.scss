@@ -1,0 +1,29 @@
+.ListItem {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid black;
+  font-size: 16px;
+  background-color: #acd3cc7c;
+  width: 100%;
+  &:first-child {
+    margin-top: 1rem;
+  }
+  p {
+    margin: 0;
+    padding-left: 10px;
+    font-size: 2rem;
+    font-weight: 500;
+    &.completed {
+      text-decoration: line-through;
+    }
+  }
+
+  .MuiCheckbox-root {
+    margin-right: 10px;
+    font-size: larger;
+  }
+
+  .MuiButton-root {
+    margin-left: auto;
+  }
+}

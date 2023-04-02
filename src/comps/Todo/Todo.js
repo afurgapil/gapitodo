@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./todo.scss";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../firebase";
 
 function TodoForm(props) {
   const [newTodo, setNewTodo] = useState("");
@@ -16,21 +18,21 @@ function TodoForm(props) {
     };
     fetchQuote();
   }, []);
+
   function handleNewTodoChange(e) {
     setNewTodo(e.target.value);
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (newTodo.trim() === "") {
       return;
     }
     const todo = {
-      id: uuidv4(),
       title: newTodo,
       completed: false,
     };
-    props.onAddTodo(todo);
+    await addDoc(collection(db, "todos"), todo);
     setNewTodo("");
   }
 

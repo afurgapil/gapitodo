@@ -3,22 +3,34 @@ import TodoForm from "../Todo/Todo";
 import TodoList from "../List/List";
 import "./Home.scss";
 import { getAuth } from "firebase/auth";
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  updateDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+import { db } from "../../firebase";
+
 function Home() {
   const [todos, setTodos] = useState([]);
   const [user, setUser] = useState(null);
 
   const auth = getAuth();
   const currentUser = auth.currentUser;
-  useEffect(() => {
-    const storedTodos = JSON.parse(localStorage.getItem("todos"));
-    if (storedTodos) {
-      setTodos(storedTodos);
-    }
-  }, []);
 
   useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
+    const unsubscribe = onSnapshot(collection(db, "todos"), (snapshot) => {
+      const todoData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setTodos(todoData);
+    });
+    return unsubscribe;
+  }, []);
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
@@ -26,24 +38,22 @@ function Home() {
 
     return unsubscribe;
   }, []);
-  function addTodo(newTodo) {
-    setTodos([...todos, newTodo]);
+
+  async function addTodo(newTodo) {
+    const todoRef = await addDoc(collection(db, "todos"), newTodo);
+    setTodos([...todos, { id: todoRef.id, ...newTodo }]);
   }
 
-  function completeTodo(id) {
-    const updatedTodos = todos.map((todo) => {
-      if (todo.id === id) {
-        return { ...todo, completed: !todo.completed };
-      } else {
-        return todo;
-      }
+  async function completeTodo(todo) {
+    await updateDoc(doc(db, "todos", todo.id), {
+      ...todo,
+      completed: !todo.completed,
     });
-    setTodos(updatedTodos);
+    todo.completed = !todo.completed;
   }
 
-  function deleteTodo(id) {
-    const updatedTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(updatedTodos);
+  async function deleteTodo(todo) {
+    await deleteDoc(doc(db, "todos", todo.id));
   }
 
   return (
