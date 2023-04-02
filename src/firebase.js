@@ -3,15 +3,14 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 const firebaseConfig = {
-  apiKey: "AIzaSyD1Ok0xbv1MgU3gRhlzv4Gg9Bl6IoMyEXI",
-  authDomain: "react-todo-app-14b70.firebaseapp.com",
-  databaseURL:
-    "https://react-todo-app-14b70-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "react-todo-app-14b70",
-  storageBucket: "react-todo-app-14b70.appspot.com",
-  messagingSenderId: "125825857540",
-  appId: "1:125825857540:web:3b6fb19766cee61edddd51",
-  measurementId: "G-916JTHWS8G",
+  apiKey: process.env.REACT_APP_FIREBASEAPIKEY,
+  authDomain: process.env.REACT_APP_FIREBASEAUTHDOMAIN,
+  databaseURL: process.env.REACT_APP_FIREBASEDATABASEURL,
+  projectId: process.env.REACT_APP_FIREBASEPROJECTID,
+  storageBucket: process.env.REACT_APP_FIREBASESTORAGEBUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASEMESSAGINGSENDERID,
+  appId: process.env.REACT_APP_FIREBASEAPPID,
+  measurementId: process.env.REACT_APPFIREBASEMEASUREMENTID,
 };
 
 const app = initializeApp(firebaseConfig);
