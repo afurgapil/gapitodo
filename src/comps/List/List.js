@@ -1,15 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
 import ListItem from "./ListItem";
 import "./list.scss";
-import { useState, useRef, useEffect } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import TodosCount from "../../hooks/TodosCount";
+
 function TodoList(props) {
   const [animationParent] = useAutoAnimate();
-  const [todoCount, setTodoCount] = useState(props.todos.length);
-
-  useEffect(() => {
-    setTodoCount(props.todos.length);
-  }, [props.todos]);
 
   const sortedTodos = [...props.todos].sort((a, b) => {
     if (a.completed && !b.completed) {
@@ -32,7 +28,7 @@ function TodoList(props) {
 
   return (
     <div className="TodoList" ref={animationParent}>
-      <p>You have {todoCount} todos</p>
+      {/* <TodosCount todosCount={props.todos.length} /> */}
       {sortedTodos.map((todo) => (
         <ListItem
           key={todo.id}
