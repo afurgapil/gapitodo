@@ -1,14 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
 import "./todo.scss";
 import { addDoc, collection } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, app } from "../../firebase";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 function TodoForm(props) {
   const [newTodo, setNewTodo] = useState("");
   const [quote, setQuote] = useState("");
   const [author, setAuthor] = useState("");
+  const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return unsubscribe;
+  }, []);
   useEffect(() => {
     const fetchQuote = async () => {
       const response = await fetch("https://api.quotable.io/random");
@@ -29,10 +42,12 @@ function TodoForm(props) {
       return;
     }
     const createdAt = Date.now();
+    const userID = user.uid;
     const todo = {
       title: newTodo,
       completed: false,
       createdAt: createdAt,
+      userID: userID,
     };
     await addDoc(collection(db, "todos"), todo);
     setNewTodo("");

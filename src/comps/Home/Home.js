@@ -10,27 +10,30 @@ import {
   updateDoc,
   doc,
   deleteDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
-
 function Home() {
   const [todos, setTodos] = useState([]);
   const [user, setUser] = useState(null);
   const [completedTodos, setCompletedTodos] = useState([]);
   const auth = getAuth();
-  const currentUser = auth.currentUser;
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "todos"), (snapshot) => {
-      const todoData = snapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }))
-        .sort((a, b) => b.createdAt - a.createdAt); // Zaman damgasına göre ters sırala
+    if (user) {
+      const q = query(collection(db, "todos"), where("userID", "==", user.uid));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const todoData = snapshot.docs
+          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .sort((a, b) => b.createdAt - a.createdAt);
 
-      setTodos(todoData.filter((todo) => !todo.completed)); // Tamamlanmamış todoları set et
-      setCompletedTodos(todoData.filter((todo) => todo.completed)); // Tamamlanmış todoları set et
-    });
-    return unsubscribe;
-  }, []);
+        setTodos(todoData.filter((todo) => !todo.completed));
+        setCompletedTodos(todoData.filter((todo) => todo.completed));
+      });
+      return unsubscribe;
+    }
+  }, [user]);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "todos"), (snapshot) => {
